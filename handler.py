@@ -1,6 +1,8 @@
 import networkx as nx
 import numpy as np
-
+from random import randint
+from scipy import linalg
+from scipy import sparse
 
 class Handler:
 
@@ -37,8 +39,10 @@ class Handler:
 
         numerator = np.matmul(maltiply.transpose(),maltiply)
         deno = np.matmul(maltiply,oneMatrix)
+        print(deno)
         denominator = np.linalg.inv(deno)
-        value = numerator*denominator
+        value = denominator*numerator
+        # value = numerator*denominator
         return value-A
     def conectivityMatrix(partitionArray,G):
         matrix = np.zeros((len(partitionArray),len(partitionArray)),dtype=np.float)
@@ -51,15 +55,65 @@ class Handler:
                     count = 0.0
                     for c in r:
                         for d in partitionArray[k]:
-                            #value+=float(G.get_edge_data(d,c)['weight'])
+
                             if(G.get_edge_data(d,c) is not None):
-                                count+=1.0
-                                value+=G.get_edge_data(d,c)['weight']
+                                value+=float(G.get_edge_data(d,c)['weight'])
+                                count+=1
+                                # if (len(G.get_edge_data(d, c)) > 1):
+                                #     value += abs(G.get_edge_data(d, c)[1][data])
                     if(count!=0):
                         edgecut+=value
                         matrix[i][k] = value/count
                         matrix[k][i] = value/count
 
             i+=1;
-        return matrix,edgecut   ; 
+        return matrix,edgecut
+    def edgeConectivity(G,p1,p2):
+        value = 0
+        for q in p1:
+            for r in q:
+                for c in r:
+                    for d in p2:
+                        # value+=float(G.get_edge_data(d,c)['weight'])
+                        if (G.get_edge_data(d, c) is not None):
+                            value += float(G.get_edge_data(d, c)['weight'])
+        return value
 
+    def degreeMatrix(G,p):
+        matrix = np.zeros((len(p), len(p)), dtype=np.float)
+        i=0
+        for r in p:
+            degreeCount = 0
+            for c in r:
+                degreeCount+=G.degree(c)
+            matrix[i][i] = degreeCount
+            i+=1
+        return matrix
+
+    def partitionSize(partitionArray,indexer):
+        max, id = 100000, 0
+        for i in range(0, len(partitionArray)):
+            if (len(partitionArray[i]) < max)&(i not in indexer):
+                max = len(partitionArray[i])
+                id = i
+        return id
+
+    def interPartitionConectivity(G,p1,p2):
+
+        value = 0
+        for r in p1:
+            for c in r:
+                for d in p2:
+                    # value+=float(G.get_edge_data(d,c)['weight'])
+                    if (G.get_edge_data(d, c) is not None):
+                        value += float(G.get_edge_data(d, c)['weight'])
+        return value
+
+    def partitionRandom(partitionArray,indexer):
+        value =0
+        while(True):
+            value = randint(0,len(partitionArray)-1)
+            if value not in indexer:
+                break
+
+        return value

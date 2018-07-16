@@ -48,48 +48,31 @@ G = nx.read_edgelist('colombo.txt',nodetype=int, data=(('weight',float),))
 
 nodecount = G.nodes()
 # define K
-partitionSize = 4
+partitionSize = 8
 
-maxValue = sys.maxsize
-minValue = 0
-array = []
-maxArray = 0
-while minValue*2<maxValue:
-    if minValue==0:
-        array = partition(2, G, G.nodes())
-        dictry = dict()
-        for c in range(0, len(array)):
-            print(len(array[c]))
-            dictry[c] = len(array[c])
-        maxValue = max(dictry.items(), key=operator.itemgetter(1))[1]
-        minValue = min(dictry.items(), key=operator.itemgetter(1))[1]
-        maxArray = max(dictry.items(), key=operator.itemgetter(1))[0]
-    else:
-        for k in partition(2, G, array[maxArray]):
-            array.append(k)
-        del array[maxArray]
-    dictry = dict()
-    for c in range(0, len(array)):
-        print(len(array[c]))
-        dictry[c] = len(array[c])
-    print(".....")
-    maxValue = max(dictry.items(), key=operator.itemgetter(1))[1]
-    maxArray = max(dictry.items(), key=operator.itemgetter(1))[0]
+array = partition(partitionSize, G, G.nodes())
 
-# np.savetxt('test_1.txt', array, fmt='%r')
-# array = list(H.nodes())
-# G = H.subgraph(array[:1000])
-
-#
-# G = nx.Graph()
-#
-# G.add_edge('a','b',weight=1)
-# G.add_edge('b','c',weight=1)
-# G.add_edge('a','c',weight=1)
-#
-# G.add_edge('a','d',weight=1)
-# G.add_edge('d','e',weight=1)
-
+# while minValue*2<maxValue:
+#     if minValue==0:
+#         array = partition(partitionSize, G, G.nodes())
+#         dictry = dict()
+#         for c in range(0, len(array)):
+#             print(len(array[c]))
+#             dictry[c] = len(array[c])
+#         maxValue = max(dictry.items(), key=operator.itemgetter(1))[1]
+#         minValue = min(dictry.items(), key=operator.itemgetter(1))[1]
+#         maxArray = max(dictry.items(), key=operator.itemgetter(1))[0]
+#     else:
+#         for k in partition(partitionSize, G, array[maxArray]):
+#             array.append(k)
+#         del array[maxArray]
+#     dictry = dict()
+#     for c in range(0, len(array)):
+#         print(len(array[c]))
+#         dictry[c] = len(array[c])
+#     print(".....")
+#     maxValue = max(dictry.items(), key=operator.itemgetter(1))[1]
+#     maxArray = max(dictry.items(), key=operator.itemgetter(1))[0]
 
 
 print(array)
@@ -120,7 +103,7 @@ for k in array:
             partitionArray.append(k)
     else:
         partitionArray.append(k)
-
+np.savetxt('test_colombo.txt', partitionArray,fmt='%r')
 matrix,edgecut1 = Handler.conectivityMatrix(partitionArray,G)
 edgecut2 = 0
 put,edgeConectivity = Handler.conectivityMatrix(partitionArray,G)

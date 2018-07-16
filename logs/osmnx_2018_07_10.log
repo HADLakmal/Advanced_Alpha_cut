@@ -1,0 +1,3 @@
+2018-07-10 07:30:35,875 INFO osmnx Configured osmnx
+2018-07-10 07:30:35,877 INFO osmnx Pausing 1.00 seconds before making API GET request
+2018-07-10 07:30:36,878 INFO osmnx Requesting https://nominatim.openstreetmap.org/search?format=json&limit=1&dedupe=0&polygon_geojson=1&q=colombo%2Ccolombo+district%2C+Western+Province%2C+Sri+Lanka with timeout=30
