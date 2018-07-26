@@ -22,7 +22,7 @@ class Handler:
                         array[r].append(a)
                         break
         return array
-    def alphaCut(A,adjecency):
+    def alphaCut(A):
         #define zero matrix
         degree = np.zeros((A.shape[0],A.shape[0]),dtype=np.float)
         #define ones matrix
@@ -31,10 +31,7 @@ class Handler:
         rowsum = A.sum(axis=0)
         #create degree matrix
         for j in range(0, A.shape[0]):
-            if(adjecency==1):
-                degree[j,j] = rowsum[0,j]
-            else:
-                degree[j,j] = rowsum[j]
+            degree[j,j] = rowsum[j]
         #Get alpha cut matrix
         maltiply = np.matmul(oneMatrix.transpose(), degree)
 
@@ -72,6 +69,33 @@ class Handler:
 
             i+=1;
         return matrix,edgecut
+    def adjecencyMatrixes(partitionArray,G,data):
+        matrix = np.zeros((len(partitionArray), len(partitionArray)), dtype=np.float)
+        pickMatrix = np.zeros((len(partitionArray), len(partitionArray)), dtype=np.float)
+        i = 0
+        edgecut = 0
+        for r in partitionArray:
+            for k in range(0, len(partitionArray)):
+                if (k > i):
+                    value = 0.0
+                    pickValue = 0
+                    for c in r:
+                        for d in partitionArray[k]:
+                            # value+=float(G.get_edge_data(d,c)['weight'])
+                            if (G.get_edge_data(str(d), str(c)) is not None):
+                                # value += abs(G.get_edge_data(d, c)[data])
+                                value += 1
+                                if (len(G.get_edge_data(str(d), str(c))) > 1):
+                                    value += abs(G.get_edge_data(str(d), str(c))[1][data])
+                                    pickValue += abs(G.get_edge_data(str(d), str(c))[1][data])
+                    matrix[i][k] = value
+                    matrix[k][i] = value
+                    pickMatrix[i][k] = pickValue
+                    pickMatrix[k][i] = pickValue
+                    if(value>0):
+                        print(r,value)
+            i += 1;
+        return matrix ,pickMatrix
     def edgeConectivity(matrix,part,index):
         value = 0
         for q in part:
@@ -119,15 +143,26 @@ class Handler:
                 break
 
         return value
+    def partitionRandomNew(adjecencyMatrix,indexer,partitionSize):
+        value =0
+
+        for z in range(0,int(len(adjecencyMatrix)/partitionSize)):
+            value = randint(0,len(adjecencyMatrix)-1)
+            if value not in indexer:
+                break
+
+        return value
 
     def adjecencyMatrix(partitionArray,G,data):
         matrix = np.zeros((len(partitionArray),len(partitionArray)),dtype=np.float)
+        pickMatrix = np.zeros((len(partitionArray),len(partitionArray)),dtype=np.float)
         i = 0
         edgecut = 0
         for r in partitionArray:
             for k in range(0,len(partitionArray)):
                 if(k>i):
                     value = 0.0
+                    pickValue = 0
                     for c in r:
                         for d in partitionArray[k]:
                             #value+=float(G.get_edge_data(d,c)['weight'])
@@ -136,21 +171,26 @@ class Handler:
                                 value+=1
                                 if (len(G.get_edge_data(str(d), str(c))) > 1):
                                     value += abs(G.get_edge_data(str(d), str(c))[1][data])
-                        matrix[i][k] = value
-                        matrix[k][i] = value
+                                    pickValue+=abs(G.get_edge_data(str(d), str(c))[1][data])
+                    matrix[i][k] = value
+                    matrix[k][i] = value
+                    pickMatrix[i][k]=pickValue
+                    pickMatrix[k][i] = pickValue
                 elif(i==k):
                     value = 0
+                    pickValue = 0
                     for x in range(0,len(r)):
                         for y in range(x,len(r)):
                             if (G.get_edge_data(str(r[x]), str(r[y])) is not None):
                                 value+=1
                                 if (len(G.get_edge_data(str(r[x]), str(r[y]))) > 1):
                                     value += abs(G.get_edge_data(str(r[x]), str(r[y]))[1][data])
+                                    pickValue += abs(G.get_edge_data(str(r[x]), str(r[y]))[1][data])
                     matrix[i][k] = value
-
+                    pickMatrix[i][k] = pickValue
 
             i+=1;
-        return matrix
+        return matrix , pickMatrix
 
     def partCon(G,p1,p2,data):
 

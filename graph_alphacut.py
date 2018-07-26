@@ -15,7 +15,6 @@ import sys
 def partition(partitionSize, G):
     # print(nx.adjacency_matrix(G,nodelist = ['c','e']).todense())
     A = nx.adjacency_matrix(G)
-    print(A)
     # Alpah cut
     M = Handler.alphaCut(A, 1)
     # eigen calculatio
